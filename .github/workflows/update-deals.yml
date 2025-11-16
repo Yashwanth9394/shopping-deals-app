@@ -1,0 +1,39 @@
+name: Update Deals Daily
+
+on:
+  schedule:
+    # Runs every day at 8 AM UTC (3 AM EST, 1:30 PM IST)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  update-deals:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Fetch latest deals from Google Sheets
+        run: |
+          curl -sL "https://docs.google.com/spreadsheets/d/1zt_OaS_HIAdhqsCs6ftK8dwTl8iVgxN5OyOcQhyMu1o/export?format=csv" > deals.csv
+          
+      - name: Check if there are changes
+        id: check_changes
+        run: |
+          git diff --exit-code deals.csv || echo "changed=true" >> $GITHUB_OUTPUT
+          
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add deals.csv
+          git commit -m "🔄 Auto-update deals from Google Sheets [$(date +'%Y-%m-%d %H:%M:%S')]"
+          git push
+          
+      - name: Notify completion
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          echo "✅ Deals updated successfully!"
+          echo "🚀 Amplify will auto-deploy shortly..."

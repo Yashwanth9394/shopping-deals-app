@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-shoppingdealsapp-dev-4d119-authRole",
+      "UnauthRoleArn": "arn:aws:iam::211125414476:role/amplify-shoppingdealsapp-dev-4d119-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::211125414476:role/amplify-shoppingdealsapp-dev-4d119-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-shoppingdealsapp-dev-4d119-deployment",
+      "UnauthRoleName": "amplify-shoppingdealsapp-dev-4d119-unauthRole",
+      "StackName": "amplify-shoppingdealsapp-dev-4d119",
+      "StackId": "arn:aws:cloudformation:us-east-1:211125414476:stack/amplify-shoppingdealsapp-dev-4d119/248ed750-c301-11f0-97e7-0e4ccba253ad",
+      "AmplifyAppId": "d4bc16wbw9avw"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d4bc16wbw9avw",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}

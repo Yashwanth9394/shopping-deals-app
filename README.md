@@ -20,15 +20,31 @@ A beautiful, modern web application to display shopping deals from your Google S
 4. **Sort**: Choose how you want to sort the deals
 5. **Click**: Click "Get This Deal" to visit the deal page
 
-## Auto-Update from Google Sheets
+## 🔄 Auto-Update from Google Sheets
 
-The app reads from `deals.csv` which is exported from your Google Sheet. To update deals:
+### Automatic Daily Updates ⏰
+Your app automatically updates from Google Sheets **every day at 8 AM UTC** (1:30 PM IST) using GitHub Actions!
+
+The workflow:
+1. 📥 Fetches latest data from your Google Sheet
+2. 🔍 Checks if there are any changes
+3. ✅ Commits and pushes changes to GitHub
+4. 🚀 Amplify automatically deploys the updates
+
+### Manual Update
+To update deals manually anytime:
 
 ```bash
-curl -sL "https://docs.google.com/spreadsheets/d/1zt_OaS_HIAdhqsCs6ftK8dwTl8iVgxN5OyOcQhyMu1o/export?format=csv" > deals.csv
+./update-deals.sh
+git add deals.csv
+git commit -m "Update deals"
+git push
 ```
 
-Or set up a cron job to update automatically!
+Or trigger the GitHub Action manually from the "Actions" tab on GitHub.
+
+### Continuous Deployment
+Every push to the `master` branch automatically triggers a deployment to Amplify!
 
 ## Local Development
 

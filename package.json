@@ -1,0 +1,9 @@
+{
+  "name": "shopping-deals-app",
+  "version": "1.0.0",
+  "description": "A beautiful shopping deals web app",
+  "scripts": {
+    "build": "mkdir -p dist && cp index.html deals.csv dist/",
+    "start": "echo 'Static site - open index.html'"
+  }
+}
