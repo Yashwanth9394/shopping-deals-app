@@ -143,13 +143,32 @@
             background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
             border-radius: 10px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             margin-bottom: 15px;
-            color: #999;
-            font-size: 3rem;
             position: relative;
             overflow: hidden;
+        }
+
+        .product-icon {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        .store-icon-small {
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .image-placeholder::before {
@@ -159,8 +178,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 3s infinite;
         }
 
         @keyframes shimmer {
@@ -888,6 +907,67 @@ Revlon 1875W Compact Hair Dryer,,10.97,28.28,,https://dealsmocktail.com/3933-rev
             }
         }
 
+        // Map stores to icons for better visual appeal
+        function getStoreIcon(storeName) {
+            const store = storeName.toLowerCase();
+            const iconMap = {
+                'amazon': '📦',
+                'walmart': '🏪',
+                'target': '🎯',
+                'apple': '🍎',
+                'sony': '🎮',
+                'samsung': '📱',
+                'dyson': '💨',
+                'shark': '🦈',
+                'bose': '🎧',
+                'nike': '👟',
+                'adidas': '⚽',
+                'lego': '🧱',
+                'keurig': '☕',
+                'ninja': '🥷',
+                'jbl': '🔊',
+                'lg': '📺',
+                'costco': '🏬',
+                'various': '🛍️'
+            };
+            
+            for (const [key, icon] of Object.entries(iconMap)) {
+                if (store.includes(key)) return icon;
+            }
+            
+            // Default icons based on product category
+            return '🛍️';
+        }
+
+        function getProductIcon(productName) {
+            const product = productName.toLowerCase();
+            
+            // Category-based icons
+            if (product.includes('laptop') || product.includes('macbook')) return '💻';
+            if (product.includes('phone') || product.includes('iphone') || product.includes('galaxy')) return '📱';
+            if (product.includes('watch') || product.includes('smartwatch')) return '⌚';
+            if (product.includes('airpods') || product.includes('earbuds') || product.includes('headphone')) return '🎧';
+            if (product.includes('tv') || product.includes('television')) return '📺';
+            if (product.includes('vacuum') || product.includes('cleaner')) return '🧹';
+            if (product.includes('blender') || product.includes('mixer')) return '🍹';
+            if (product.includes('coffee') || product.includes('espresso')) return '☕';
+            if (product.includes('air fryer')) return '🍳';
+            if (product.includes('bike') || product.includes('scooter')) return '🛴';
+            if (product.includes('speaker')) return '🔊';
+            if (product.includes('chair') || product.includes('sofa') || product.includes('furniture')) return '🪑';
+            if (product.includes('bed') || product.includes('mattress')) return '🛏️';
+            if (product.includes('toy') || product.includes('lego')) return '🧸';
+            if (product.includes('shoe') || product.includes('sneaker')) return '👟';
+            if (product.includes('shirt') || product.includes('clothing')) return '👕';
+            if (product.includes('beauty') || product.includes('makeup')) return '💄';
+            if (product.includes('hair dryer') || product.includes('styling')) return '💇';
+            if (product.includes('gaming') || product.includes('game')) return '🎮';
+            if (product.includes('projector')) return '📽️';
+            if (product.includes('camera')) return '📷';
+            
+            return '🎁';
+        }
+
         function displayDeals(deals) {
             const container = document.getElementById('dealsContainer');
             
@@ -904,13 +984,19 @@ Revlon 1875W Compact Hair Dryer,,10.97,28.28,,https://dealsmocktail.com/3933-rev
             container.innerHTML = deals.map((deal, index) => {
                 const isHighlight = deal.productName.toLowerCase().includes('membership') ||
                                    deal.discount > 50;
+                
+                const productIcon = getProductIcon(deal.productName);
+                const storeIcon = getStoreIcon(deal.storeName);
 
                 return `
                     <div class="deal-card ${isHighlight ? 'highlight-deal' : ''}" data-deal-index="${index}">
-                        <div class="image-placeholder" id="img-${index}">🛍️</div>
+                        <div class="image-placeholder">
+                            <div class="product-icon">${productIcon}</div>
+                            <div class="store-icon-small">${storeIcon}</div>
+                        </div>
                         <div class="deal-header">
                             <h3 class="product-name">${deal.productName}</h3>
-                            <span class="store-badge">${deal.storeName}</span>
+                            <span class="store-badge">${storeIcon} ${deal.storeName}</span>
                         </div>
                         
                         ${deal.dealPrice ? `
@@ -946,108 +1032,17 @@ Revlon 1875W Compact Hair Dryer,,10.97,28.28,,https://dealsmocktail.com/3933-rev
                     </div>
                 `;
             }).join('');
-
-            // Load images after rendering
-            loadProductImages(deals);
         }
 
         async function fetchOGImage(url) {
-            try {
-                // Try multiple CORS proxies for better reliability
-                const proxies = [
-                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-                ];
-
-                for (const proxyUrl of proxies) {
-                    try {
-                        const response = await fetch(proxyUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'text/html'
-                            }
-                        });
-
-                        if (!response.ok) continue;
-
-                        const html = await response.text();
-
-                        // Parse the HTML to extract OG image
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-
-                        // Try multiple meta tag variations
-                        let imageUrl = doc.querySelector('meta[property="og:image"]')?.content ||
-                                      doc.querySelector('meta[name="og:image"]')?.content ||
-                                      doc.querySelector('meta[property="twitter:image"]')?.content ||
-                                      doc.querySelector('meta[name="twitter:image"]')?.content ||
-                                      doc.querySelector('meta[itemprop="image"]')?.content;
-
-                        if (imageUrl) {
-                            // Make sure the image URL is absolute
-                            if (imageUrl.startsWith('/')) {
-                                const urlObj = new URL(url);
-                                imageUrl = urlObj.origin + imageUrl;
-                            }
-                            return imageUrl;
-                        }
-                    } catch (proxyError) {
-                        console.log('Proxy failed, trying next...', proxyError);
-                        continue;
-                    }
-                }
-
-                return null;
-            } catch (error) {
-                console.error('Error fetching OG image:', error);
-                return null;
-            }
+            // Removed unreliable OG image fetching
+            // Using category-based icons instead for better performance
+            return null;
         }
 
         async function loadProductImages(deals) {
-            // Load images in batches to avoid overwhelming the browser
-            const batchSize = 3;
-            const timeout = 10000; // 10 second timeout per image
-
-            for (let i = 0; i < deals.length; i += batchSize) {
-                const batch = deals.slice(i, i + batchSize);
-
-                await Promise.all(batch.map(async (deal, batchIndex) => {
-                    const index = i + batchIndex;
-
-                    try {
-                        // Add timeout to image fetch
-                        const imageUrl = await Promise.race([
-                            fetchOGImage(deal.link),
-                            new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error('Timeout')), timeout)
-                            )
-                        ]);
-
-                        if (imageUrl) {
-                            const placeholder = document.getElementById(`img-${index}`);
-                            if (placeholder) {
-                                // Create image element to test if it loads
-                                const img = new Image();
-                                img.onload = () => {
-                                    if (placeholder && placeholder.id === `img-${index}`) {
-                                        placeholder.outerHTML = `<img src="${imageUrl}" alt="${deal.productName}" class="product-image" loading="lazy" onerror="this.outerHTML='<div class=\\'image-placeholder\\''>🛍️</div>'">`;
-                                    }
-                                };
-                                img.onerror = () => {
-                                    console.log(`Failed to load image for: ${deal.productName}`);
-                                };
-                                img.src = imageUrl;
-                            }
-                        }
-                    } catch (error) {
-                        console.log(`Error loading image for ${deal.productName}:`, error.message);
-                    }
-                }));
-
-                // Small delay between batches
-                await new Promise(resolve => setTimeout(resolve, 800));
-            }
+            // Image loading disabled - using smart icons instead
+            // This prevents slow loading, CORS errors, and improves performance
         }
 
         function filterAndSortDeals() {
