@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Deals - Best Prices Today</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .deal-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #999;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .deal-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .deal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .deal-header {
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .store-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .deal-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e91e63;
+        }
+
+        .regular-price {
+            font-size: 1.2rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            background: #ff4444;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .coupon-code {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .coupon-label {
+            font-size: 0.85rem;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .code {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .deal-link {
+            display: block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .deal-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .deal-time {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            color: #666;
+        }
+
+        .no-results h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .deals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                flex-direction: column;
+            }
+
+            .filter-group input,
+            .filter-group select {
+                width: 100%;
+            }
+        }
+
+        .highlight-deal {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+
+        .highlight-deal .product-name,
+        .highlight-deal .deal-time {
+            color: white;
+        }
+
+        .highlight-deal::before {
+            background: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛍️ Shopping Deals</h1>
+            <p class="subtitle">Best Prices & Exclusive Offers Updated Daily</p>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search products, stores..." />
+                <select id="storeFilter">
+                    <option value="">All Stores</option>
+                </select>
+                <select id="sortBy">
+                    <option value="discount">Best Discount</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalDeals">0</div>
+                <div class="stat-label">Total Deals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgSavings">0%</div>
+                <div class="stat-label">Avg Savings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="maxDiscount">0%</div>
+                <div class="stat-label">Max Discount</div>
+            </div>
+        </div>
+
+        <div id="dealsContainer" class="deals-grid">
+            <div class="loading">Loading amazing deals...</div>
+        </div>
+    </div>
+
+    <script>
+        let allDeals = [];
+
+        // Embedded deals data
+        const csvData = `This Sheet will be updated on a Daily Basis,,,,,,,
+Product Name ,Store Name ,Deal Price ,Regular Price,coupon code ,link ,Start Time ,End Time
+Walmart Black Friday Deals are Live Now for Walmart Plus Members,,,,,https://dealsmocktail.com/saleDetail/243-walmart-early-black-friday-deals-are-live-now,,
+Walmart+ Membership (50% Off),,49,98,,https://dealsmocktail.com/12562-walmart-member-get-50-off,,
+"If you don’t have Amazon prime subscription, grab a free trail now. ",,,,,,,
+6 month free trail for Ages 18-24 (Amazon Prime),,,,,https://dealsmocktail.com/2208-students-get-6-months-free-amazon-prime-membership-all-18-24-old-are-welcome-to-apply,,
+1 month free trail for everyone (Amazon Prime),,,,,https://dealsmocktail.com/2208-students-get-6-months-free-amazon-prime-membership-all-18-24-old-are-welcome-to-apply,,
+🚨NEW COSTCO MEMBERSHIP DEAL!  $25 MEMBERSHIP AFTER OFFERS! ,,25,65,,https://dealsmocktail.com/8588-one-year-costco-membership-with-40-or-60-digital-costco-shop-card,,
+,,,,,,,
+Beats,,,,,,,
+Beats Solo Buds Bluetooth Earbuds- Ivory,,39,69,,https://dealsmocktail.com/12579-beats-solo-buds-bluetooth-earbuds-ivory,,
+Apple,Amazon,,,,,,
+Apple AirTag ,,18,29,,https://dealsmocktail.com/12613-apple-airtag,,
+Apple AirTag 4 Pack,Amazon,64.99,99.99,,https://dealsmocktail.com/12398-apple-airtag-4-pack,,
+Apple AirPods 4 Wireless Earbuds,Amazon,84.99,130,,https://dealsmocktail.com/8136-apple-airpods-4-wireless-earbuds,,
+"Apple AirPods Pro 2, Wireless Earbuds, Active Noise Cancellation",,139,239,,https://dealsmocktail.com/3295-apple-airpods-pro-2-wireless-earbuds-active-noise-cancellation,,
+Apple Watch SE (2nd Gen) [GPS 40mm] Smartwatch,Amazon,159.99,249,,https://www.dealsmocktail.com/blog/g3humozg9dm9hqiottj8j7i0/apple-watches-deals---live-on-amazon-ends-today,11/20/2025,12/1/2025
+Apple Watch SE (2nd Gen) [GPS 44mm] Smartwatch,Amazon,189.99,279,,,11/20/2025,12/1/2025
+Apple Watch SE (2nd Gen) [GPS + Cellular 44mm] Smartwatch,Amazon,190,329,,,11/20/2025,12/1/2025
+Apple Watch SE (2nd Gen) [GPS + Cellular 44mm] Smartwatch with Starlight Sport Band,Amazon,239.99,329,,,11/20/2025,12/1/2025
+Apple Watch SE 3 [GPS 44mm] Smartwatch,Amazon,229.99,279,,,11/20/2025,12/1/2025
+Apple Watch Series 10 [GPS 42mm case] Smartwatch with Sport Band,Amazon,249.99,399,,,11/20/2025,12/1/2025
+Apple Watch Series 10 [GPS 46mm case] Smartwatch,Amazon,279,429,,,11/20/2025,12/1/2025
+"Apple 2025 MacBook Air 13"" (M4) – 16GB RAM, 256GB SSD
+",,749,999,,https://dealsmocktail.com/5491-apple-2025-macbook-air-13-inch-laptop,,
+Apple Watch SE 3 [GPS 40mm] Smartwatch ,,199,249,,https://dealsmocktail.com/12639-apple-watch-se-3-gps-40mm-smartwatch,,
+,,,,,,,
+Apple Watch Ultra 2 [GPS + Cellular 49mm] Smartwatch,Amazon,599,799,,https://amzn.to/4nO1JpU,11/20/2025,12/1/2025
+,Amazon,,,,,,
+,Amazon,,,,,,
+,Amazon,,,,,,
+,,,,,,,
+JBL,,,,,,,
+JBL Tune 520BT - Wireless On-Ear Headphones,,29.99,59.99,,https://dealsmocktail.com/616-jbl-tune-520bt-wireless-on-ear-headphones,11/11/2025,12/06/2025
+JBL Tune 720BT - Wireless Over-Ear Headphones ,,44.99,89.99,,https://dealsmocktail.com/12510-jbl-tune-720bt-wireless-over-ear-headphones,11/09/2025,12/06/2025
+"JBL PartyBox Wireless Mic Set – 2 Digital Mics, 20-hr Battery, 2.4GHz Connection (Black)",,99.95,149.99,,https://dealsmocktail.com/12638-jbl-partybox-wireless-mic-set-2-digital-mics-20-hr-battery-24ghz-connection-black,,
+JBL Tune Flex - True Wireless Noise Cancelling Earbuds (Black),,39.95,99.95,,,,
+,,,,,,,
+,,,,,,,
+Sony,,,,,,,
+Sony WH-CH720N Wireless Noise Canceling Headphone,,99.99,179.99,,https://www.dealsmocktail.com/blog/j6ah0oxsm24068osmekkjte5/sony-black-friday-deals-on-headphones,,
+Sony ULT POWER SOUND™ series | ULT WEAR Wireless Noise Canceling Headphones,,179.99,249.99,,,,
+Sony WH-1000XM4 Premium Wireless Noise Canceling Headphones,,199.99,349.99,,,,
+Sony WH-1000XM5 Premium Wireless Noise Canceling Headphones,,299.99,400,,,,
+,,,,,,,
+Bose,,,,,,,
+Bose QuietComfort Ultra Bluetooth Headphones,,299,429,,https://dealsmocktail.com/4731-bose-quietcomfort-ultra-bluetooth-headphones,11/10/2025,12/10/2025
+Bose Smart Dolby Atmos Soundbar,,399,499,,https://dealsmocktail.com/12569-bose-smart-dolby-atmos-soundbar,11/10/2025,12/10/2025
+Bose QuietComfort Earbuds with Active Noise Cancellation and Mic,,129,179,,https://dealsmocktail.com/12610-bose-quietcomfort-earbuds,,
+Bose New QuietComfort Ultra Earbuds (2nd Gen) - Wireless Noise Cancelling Earbuds with Mic,,199,299,,https://dealsmocktail.com/12611-bose-new-quietcomfort-ultra-earbuds-2nd-gen-wireless-noise-cancelling-earbuds-with-mic,,
+Bose SoundLink Plus Portable Bluetooth Speaker,,199,269,,https://dealsmocktail.com/12635-bose-soundlink-plus-portable-bluetooth-speaker,,
+Bose SoundLink Revolve+ (Series II) Bluetooth Speaker,,179,299,,https://dealsmocktail.com/12640-bose-soundlink-revolve-series-ii-bluetooth-speaker,,
+,,,,,,,
+Bluetooth Speaker Deals,,,,,,,
+Altec Lansing Hydra Jolt 2.0 Everything Proof Bluetooth Speaker,,24,70,,https://dealsmocktail.com/12578-altec-lansing-hydra-jolt-20-everything-proof-bluetooth-speaker,,
+Bose SoundLink Plus Portable Bluetooth Speaker,,199,269,,https://dealsmocktail.com/12635-bose-soundlink-plus-portable-bluetooth-speaker,,
+Bose SoundLink Revolve+ (Series II) Bluetooth Speaker,,179,299,,https://dealsmocktail.com/12640-bose-soundlink-revolve-series-ii-bluetooth-speaker,,
+,,,,,,,
+Dyson (Home Floor Care),,,,,,,
+Dyson V9 Motorbar,Amazon,269.99,599.99,,https://www.dealsmocktail.com/blog/p7sodvytvd2iov73rqxoqqj4/dyson-home-floor-care---amazon-deals,10/31/2025,11/30/2025
+Dyson V11 Origin Cordless Vacuum,Amazon,399.99,629.99,,,11/9/2025,12/20/2025
+Dyson Ball Animal Total Clean Upright Vacuum,Amazon,479.99,659.99,.,,11/9/2025,12/6/2025
+Dyson V8 Plus Cordless Vacuum,Amazon,299.99,539.99,,,11/20/2025,12/6/2025
+Dyson Ball Animal 3 Extra Upright Vacuum,Amazon,449.99,549.99,,,11/30/2025,12/20/2025
+Dyson V15 Detect Cordless Vacuum Cleaner,Amazon,599.99,849.99,,,11/23/2025,12/13/2025
+Dyson V15s Detect Submarine​ Wet Dry Vacuum,Amazon,749.99,1049.99,,,11/23/2025,12/20/2025
+Dyson Gen5detect Cordless Vacuum,Amazon,799.99,1049.99,,,11/23/2025,12/20/2025
+Dyson Gen5outsize Cordless Vacuum,Amazon,899.99,1149.99,,,11/23/2025,12/20/2025
+Dyson V12 Detect Slim Cordless Vacuum Cleaner ,,399.99,729.99,,,,
+,,,,,,,
+Shark (Floor Care),,,,,,,
+Shark Cyclone PET Handheld Vacuum,,54.99,79.99,,https://www.dealsmocktail.com/blog/hlahbthiwx36jh300q6yn4w2/shark-home-floor-care---amazon-deals,11/9/2025,11/22/2025
+Shark VACMOP Cordless Hard Floor Cleaner,,59.99,99.99,,,11/9/2025,11/22/2025
+"Shark Rocket Ultra-Light Corded Bagless Vacuum,  (HV301)",,99.99,199.99,,,11/12/2023,
+"Shark HV371 Rocket Pro DLX Corded Stick, Removable Hand Vacuum",,119.99,199.99,,,11/9/2025,12/6/2025
+Shark WV201BLBRN WANDVAC Cordless Hand Vac,,79.99,129.99,,https://amzn.to/47Nl44K,11/23/2025,12/20/2025
+"Shark Upright Vacuum, Navigator Lift-Away Deluxe with Large Dust Cup Capacity",,119.99,219.99,,https://amzn.to/47AGNOC,11/23/2025,12/6/2025
+Shark AV753 ION Robot Vacuum,,129.99,249.99,,https://amzn.to/47KpCsx,11/20/2025,12/1/2025
+Shark NV501 Rotator Professional Lift-Away Upright Vacuum with HEPA Filter,,149.99,329.99,,https://amzn.to/3WM60iT,11/23/2025,12/6/2025
+"Shark Upright Vacuum, Navigator Lift-Away with Self-Cleaning Brushroll",,149.99,299.99,,https://amzn.to/3XmtECF,11/20/2025,12/1/2025
+"Shark Cordless Vacuum Cleaner,  IZ362H",,179.99,349.99,,https://amzn.to/4oFHvAe,11/20/2025,12/1/2025
+"Shark Upright Vacuum, AZ3002",,279.99,529.99,,https://amzn.to/4885HFi,11/16/2025,12/6/2025
+Shark AI Ultra Voice Control Robot Vacuum with Matrix Clean Navigation,,249.99,599,,https://amzn.to/3Xmuj77,11/20/2025,12/1/2025
+Shark Matrix 2-in-1 Robot Vacuum,,194,378,,https://dealsmocktail.com/12583-shark-matrix-2-in-1-robot-vacuum,,
+,,,,,,,
+Ecovacs (Floor care),,,,,,,
+"ECOVACS DEEBOT T30S PRO Robot Vacuum and Mop, 11000Pa",,399.99,1099.99,,https://amzn.to/43jhZrS,11/20/2025,12/1/2025
+"ECOVACS DEEBOT N30 Omni Care Robot Vacuum and Mop, 10000Pa Suction",,399.99,699.99,,https://amzn.to/4oWmf90,11/10/2025,12/1/2025
+"ECOVACS DEEBOT T50 PRO Omni Robot Vacuum and Mop, 15,000Pa",,399.99,699.99,,https://www.dealsmocktail.com/blog/kqfgh8e0np3t6jaxpzfw7lmb/ecovacs-robot-vacuum-and-mop-deals,11/10/2025,12/1/2025
+"ECOVACS DEEBOT X9 PRO Omni Robot Vacuum and Mop,16,600Pa",,699.99,1299.99,,,11/10/2025,12/1/2025
+"ECOVACS DEEBOT X8 PRO OMNI Robot Vacuum and Mop, 18000Pa",,699.99,1099.99,,,11/10/2025,12/1/2025
+,,,,,,,
+Best Floor care Deals,,,,,,,
+"Hoover PowerScrub XL, Upright Carpet Cleaner Machine, FH68010",,98,249.99,,https://dealsmocktail.com/12594-hoover-powerscrub-xl-upright-carpet-cleaner-machine,,
+Dyson V12 Detect Slim Cordless Vacuum Cleaner,,399.99,729.99,,https://dealsmocktail.com/497-dyson-v12-detect-slim-cordless-vacuum-cleaner,,
+"BISSELL PowerClean 200W Self-Standing Cordless Stick Vacuum, Model 4172",,78.88,148,,https://dealsmocktail.com/12595-bissell-powerclean-200w-self-standing-cordless-stick-vacuum,,
+Tineco LiteVak Cordless Stick Vacuum,,99.99,299.99,,https://dealsmocktail.com/12629-tineco-litevak-cordless-stick-vacuum,,
+"Tineco GO Cordless Floor Washer, Multi-Surface Wet Dry Vacuum / Mop (GH201)",,189.99,349.99,,https://dealsmocktail.com/7497-tineco-go-h2o-cordless-floor-washer-mutli-surface-wet-dry-vacuum-mop-gh201,,
+,,,,,,,
+Best Hair Care Deals,,,,,,,
+Dyson (Hair care),,,,,,,
+Dyson Supersonic Nural™ hair dryer,,349.99,549.99,,https://mavely.app.link/e/I7GHurnDcYb,,
+Dyson Supersonic Nural™ Hair Dryer (Amber Silk),,449.99,549.99,,https://amzn.to/4hPPcRy,11/23/2025,12/20/2025
+Dyson Airstrait™ Straightener,,449.99,549.99,,https://amzn.to/4nOS2ry,11/23/2025,12/20/2025
+Dyson Airwrap i.d.™ Multi-Styler and Dryer,,549.99,649.99,,https://amzn.to/3JQRFi1,11/23/2025,12/20/2025
+Shark (Haircare),,,,,,,
+Shark FlexStyle® (Special Edition) | Air Styling & Drying System,,199,329,,https://www.dealsmocktail.com/blog/ieibw0rohh0c463m376aoje2/shark-hair-styling-deals,11/10/2025,
+Shark FlexFusion Hair Straightener & Powerful Hair Dryer with Fusion Hair Brush,,299.99,429.99,,,,
+"Shark Hair Dryer | SpeedStyle | No Heat Damage Hair Styling Tool, HD331",,149,229.99,,https://dealsmocktail.com/12634-shark-hair-dryer-speedstyle-no-heat-damage-hair-styling-tool,11/16/2025,12/6/2025
+Shark HD430 FlexStyle Air Styling & Drying System,,199,349.99,,https://amzn.to/3LVfHJi,11/23/2025,12/6/2025
+"Shark Hair Dryer | FlexStyle Hair Styling System, HD440BK",,229.99,369.99,,https://amzn.to/4ozbLfT,11/20/2025,12/1/2025
+"Shark FlexStyle Air Styling & Drying System, HD457CR",,249.99,399.99,,https://amzn.to/4hPSog2,11/20/2025,12/1/2025
+,,,,,,,
+,,,,,,,
+Smart Home (Security Cameras & Systems),,,,,,,
+Blink Mini 2 — Home Security & Pet Camera with HD video,,17.99,39.99,,https://dealsmocktail.com/saleDetail/242-blink-early-black-friday-deals,,
+Blink Video Doorbell (newest model) – Head-to-toe HD view,,29.99,69.99,,,,
+"Blink Outdoor 4 – Wireless HD Security Camera with 2-Year Battery, Night Vision & Two-Way Talk (1-Cam System, Sync Module Core Included)",,27.99,79.99,,,,
+Blink Video Doorbell + Outdoor 4 – Wireless HD Security System with 2-Year Battery & Sync Module Core (1-Cam + Doorbell),,37.99,139.98,,,,
+"Blink Video Doorbell + Outdoor 4 XR – Wireless Security System with 2-Year Battery, 400ft Range & Sync Module XR (4Cameras)",,139.99,359.98,,,,
+,,,,,,,
+Kitchen Deals,,,,,,,
+Ninja (Kitchen Appliances),,,,,,,
+Ninja BL660 Professional 1100W Blender with 72 oz Pitcher & To-Go Cups,,79.99,139.99,,https://www.dealsmocktail.com/blog/nq7i4g80khdnbeziv5gzb3du/ninja-blender-now-available,11/23/2025,12/6/2025
+"Ninja Professional 1000W Blender with 72 oz Pitcher – Total Crushing Technology, BL610",,69.99,109.99,,https://amzn.to/3JsT66n,11/23/2025,12/6/2025
+Ninja Mega Kitchen System 1500W Blender & Food Processor Combo – BL770 (Black),,99.99,219.99,,https://amzn.to/4oVYqOo,11/23/2025,12/6/2025
+Ninja | Air Fryer | 6.5 QT Pro XL Capacity fits 9lbs of Wings AF181,,89.99,179.99,,https://amzn.to/43TPmBE,11/23/2025,12/6/2025
+"Ninja | XL Single Basket Air Fryer | 5.5 QT Capacity, AF150AMZ",,89.99,179.99,,https://amzn.to/4nNC4xC,11/23/2025,12/6/2025
+"Ninja | Air Fryer | 4-in-1 Pro Air Fry, Roast, Reheat, Dehydrate | 5QT Capacity,  AF141",,79.99,129.99,,https://amzn.to/3LwrbmA,11/23/2025,12/6/2025
+"Ninja Foodi Power Blender & Processor System, 6-in-1, 72-oz Pitcher + To-Go Cups, Silver (SS401)",,169.95,259.99,,https://dealsmocktail.com/12570-ninja-foodi-power-blender-processor-system-6-in-1-72-oz-pitcher-to-go-cups-silver-ss401,,
+"Ninja Air Fryer, 10 QT, Cyberspace, DZ550​GY",,129,249.99,,https://dealsmocktail.com/12636-ninja-air-fryer-10-qt-cyberspace-dz550gy,,
+,,,,,,,
+Magic Bullet,,,,,,,
+Magic Bullet Essential with To-Go LidMagic Bullet Essential with To-Go Lid,,16,35,,https://dealsmocktail.com/12558-magic-bullet-essential-with-to-go-lid-midnight-indigo,,
+,,,,,,,
+Keurig,,,,,,,
+Keurig K-Supreme Single-Serve Coffee Maker with MultiStream & 66oz Reservoir,,99,189.99,,https://dealsmocktail.com/12572-keurig-k-supreme-single-serve-k-cup-pod-coffee-maker,,
+"Keurig K-Express Essentials Plus, Iced and Hot Single-Serve K-Cup Pod Coffee Maker",,44,79,,https://dealsmocktail.com/12576-keurig-k-express-essentials-plus-iced-and-hot-single-serve-k-cup-pod-coffee-maker-black,,
+Keurig K-Express Single Serve K-Cup Pod Coffee Maker,,79.99,109.99,,https://dealsmocktail.com/5668-keurig-k-express-k-cup-pod-coffee-maker,,
+"Beautiful 2 Qt Manual Slow Cooker, 2-Pack",,17.88,39,,https://dealsmocktail.com/12575-beautiful-2-qt-manual-slow-cooker-2-pack,,
+Carote 14 Pcs Knife Set with Wooden Block Stainless Steel Knives with Ergonomic Handle,,29.99,85.96,,https://dealsmocktail.com/4358-carote-14-pcs-knife-set-with-wooden-block-stainless-steel-knives-with-ergonomic-handle,,
+"Ninja SLUSHi Frozen Drink Machine with RapidChill Technology, 72 oz",,229,299,,https://dealsmocktail.com/12592-ninja-slushi-frozen-drink-machine-with-rapidchill-technology-72-oz,,
+"Astercook 22 Piece Pots and Pans Set Non Stick, Cookware Set",,66.49,179.98,,https://dealsmocktail.com/12593-astercook-22-piece-pots-and-pans-set-non-stick-cookware-set,,
+Cook with Color 12-Piece Mixing Bowl Set with Non-Slip Silicone Base and Transparent Lids,,11.97,34.99,,https://dealsmocktail.com/12597-cook-with-color-12-piece-mixing-bowl-set-with-non-slip-silicone-base-and-transparent-lids,,
+Smiaoer 6 Qt Compact Air Fryer Toaster Oven with Digital LED Touchscreen Electric Hot Oven,,36.99,156.99,,https://mavely.app.link/e/PGMpoe2AjYb,,
+"GPED Panini Press Grill, Stainless Steel Sandwich Maker with Double Non-Stick Coated Plates & Removable Drip Tray",,22.99,59.99,,https://mavely.app.link/e/rBtAY3oBjYb,,
+"Aroma® 20-Cup (Cooked) Rice Cooker, Grain Cooker & Food Steamer",,22.01,33.86,,https://mavely.app.link/e/PxPdLlSAjYb,,
+"Bluebow Single Serve Coffee Maker for K Cup & Ground Coffee& Tea, Capsule Coffee Machine, 6-12oz Brew Size",,29.59,73.99,,https://mavely.app.link/e/4pkqYn8AjYb,,
+"Titanium Cutting Boards for Kitchen, 10.5”×6.5”",,10.99,29.99,D7Q7JO9H,https://dealsmocktail.com/12644-titanium-cutting-boards-for-kitchen-10565,,
+Stainless Steel Cutting Board - 16x11 Inch,,11.99,23.99, JLHDVNMC,https://dealsmocktail.com/12645-stainless-steel-cutting-board-16x11-inch,,
+CAROTE 6pcs Pots and Pans Set Non Stick,,29.99,69.99,,https://dealsmocktail.com/12646-carote-6pcs-pots-and-pans-set-non-stick,,
+,,,,,,,
+Air Fryer Deals,,,,,,,
+Chefman TurboFry 2-Quart Digital Air Fryer,,29.99,49.99,,https://mavely.app.link/e/031SXrzBjYb,,
+Gourmia 8-Quart Digital Window Air Fryer with 8 One-Touch Cooking Functions,,39,129,,https://dealsmocktail.com/12582-gourmia-8-quart-digital-window-air-fryer-with-8-one-touch-cooking-functions,Gourmia 8-Quart Digital Window Air Fryer with 8 One-Touch Cooking Functions,
+Gourmia 4-Qt Digital Air Fryer,,45.59,60,,https://dealsmocktail.com/12577-gourmia-4-qt-digital-air-fryer,Gourmia 4-Qt Digital Air Fryer,
+Chefman TurboFry® Touch 6-Qt Easy-View Air Fryer w/ 4 Cooking Presets and 450°F Hi-Fry Button,,49.99,99.99,,https://mavely.app.link/e/A7egARwdXUb,,
+,,,,,,,
+,,,,,,,
+Nutribullet,,,,,,,
+nutribullet Full-Size Blender Combo 1200W ,,79,160,,https://dealsmocktail.com/12574-nutribullet-full-size-blender-combo-1200w-nbf50500,,
+,,,,,,,
+(Home & Bedding),,,,,,,
+"Holiday Printed Microfiber 3-Pc. Sheet Set, Twin",,7.99,30,,https://dealsmocktail.com/12523-sanders-holiday-printed-microfiber-3-pc-sheet-set-twin,11/10/2025,
+"Clara Clark Queen Sheets Set, 1800 Series 4 Piece Deep Pocket Sheets",,17.69,69.99,,https://dealsmocktail.com/3006-clara-clark-bed-sheets-set-1800-series-deep-pocket-soft-microfiber-4-piece-queen-sheet-sets,,
+VAVSEA Steamer for Clothes,,16.19,59.99,,https://dealsmocktail.com/9802-vavsea-steamer-for-clothes,,
+BLACK+DECKER Easy Steam Compact Iron,,10.99,32.34,,https://dealsmocktail.com/12637-blackdecker-easy-steam-compact-iron,,
+,,,,,,,
+Health & Wellness,,,,,,,
+arboleaf Scalp Massager,,33.99,40,,https://dealsmocktail.com/12648-arboleaf-scalp-massager,,
+"RENPHO Shiatsu Foot Massager with Heat and Remote Control, FSA/HSA Eligible ",,67.99,105.99,,https://dealsmocktail.com/12649-renpho-shiatsu-foot-massager-with-heat-and-remote-control,,
+COMFIER HSA Eligible Shiatsu Foot Massager Machine with Heat,,63.99,90,,https://dealsmocktail.com/12650-comfier-hsa-eligible-shiatsu-foot-massager-machine-with-heat,,
+arboleaf Mini Massage Gun Deep Tissue,,44.99,57,,https://dealsmocktail.com/12651-arboleaf-mini-massage-gun-deep-tissue,,
+RENPHO Eyeris 2 Eye Massager with Heat,,47.48,72.99,,,,
+,,,,,,,
+Laptop Deals,,,,,,,
+HP 14 inch HD Chromebook Laptop Intel Processor N200 4GB RAM 128GB UFS Glacier Silver,,119,409.99,,https://dealsmocktail.com/12589-hp-14-inch-hd-chromebook-laptop-intel-processor-n200-4gb-ram-128gb-ufs-glacier-silver,,
+HP 15.6 inch FHD IPS Windows Laptop Intel Core i3-N305 8GB RAM 256GB PCIe NVMe SSD,,219,549.99,,https://dealsmocktail.com/12588-hp-156-inch-fhd-ips-windows-laptop-intel-core-i3-n305-8gb-ram-256gb,,
+Lenovo IdeaPad 5i 2-in-1 14” WUXGA Touchscreen Intel Core Ultra 5 AI 8GB Ram 512 SSD,,399,899.99,,https://dealsmocktail.com/11304-lenovo-ideapad-5i-2-in-1-14-wuxga-touchscreen-intel-core-ultra-5-ai-8gb-ram-512-ssd,,
+"ASUS Vivobook 16"" WUXGA Laptop Intel Core i7-1355U 16GB RAM 512GB SSD Black",,399,649.99,,https://dealsmocktail.com/12591-asus-vivobook-16-wuxga-laptop,,
+HP Victus 15.6 inch FHD 144Hz IPS Windows Gaming Laptop Intel Core i5-13420H 16GB RAM 512GB SSD RTX 4050,,499.99,1049.99,,https://dealsmocktail.com/8799-hp-victus-156-inch-fhd-144hz-ips-windows-laptop-intel-core-i5-13420h-16gb-ram-512gb-ssd,,
+HP OmniBook 5 16 inch 2K Laptop Next Gen AI PC AMD Ryzen AI 7 350 16GB RAM 512GB SSD,,499.99,939.99,,https://dealsmocktail.com/5904-hp-omnibook-5,,
+"Apple 2025 MacBook Air 13"" (M4) – 16GB RAM, 256GB SSD
+",,749,999,,https://dealsmocktail.com/5491-apple-2025-macbook-air-13-inch-laptop,,
+"Alienware 16"" Aurora Gaming Laptop Intel Core 7-240H, 16GB RAM, 1TB SSD, NVIDIA GeForce RTX 5050",,799,1249.99,,https://dealsmocktail.com/12590-alienware-16-aurora-gaming-laptop,,
+"Dell 16” Laptop, Intel® Core™ 5, 8GB, 512GB, FHD+ Touch, Silver Metal, Backlit Keyboard",,379,699.99,,https://dealsmocktail.com/12623-dell-16-laptop-intel-coretm-5-8gb-512gb-fhd-touch-silver-metal-backlit-keyboard,,
+,,,,,,,
+TV Deals,,,,,,,
+"VIZIO 50"" Class 4K LED HDR Limited Edition Smart TV (NEW) V4K50S-08",,128,214,,https://dealsmocktail.com/12580-vizio-50-class-4k-led-hdr-limited-edition-smart-tv-new-v4k50s-08,,
+"LG 55-Inch 4K UHD AI Smart TV, 55UA7000",,248,328.99,,https://dealsmocktail.com/12584-lg-55-inch-4k-uhd-ai-smart-tv-55ua7000,,
+"Hisense 75"" Class H5 Series QLED 4K UHD Roku Smart TV (75H5QBR, 2025 Model)",,378,499,,https://dealsmocktail.com/12585-hisense-75-class-h5-series-qled-4k-uhd-roku-smart-tv-75h5qbr-2025-model,,
+"Samsung 55"" Class QLED Q6F 4K Smart TV (2025)",,348,499.99,,https://dealsmocktail.com/12586-samsung-55-class-qled-4k-qled-smart-tv-2025-qn55q6faafxza,,
+"Samsung 65"" Inch Class QLED Q6F 4K Smart TV (2025)",,448,599.99,,https://dealsmocktail.com/12587-samsung-65-class-qled-4k-qled-smart-tv-2025-qn65q6faafxza,,
+Samsung 65” Class Crystal UHD U7900F 4K Smart TV 2025 - UN65U7900FFXZA,,328,429.99,,https://dealsmocktail.com/12596-samsung-65-class-crystal-uhd-u7900f-4k-smart-tv,,
+Samsung 55” Class Crystal UHD U7900F 4K Smart TV 2025 - UN55U7900FFXZA,,248.99,349.99,,https://dealsmocktail.com/12525-samsung-85-inch-class-crystal-uhd-u7900f,11/10/2025,
+"Samsung 70"" Class Crystal UHD U7900F 4K Smart TV 2025 - UN55U7900FFXZA",,399.99,599.99,,,11/10/2025,
+"Samsung 75"" Class Crystal UHD U7900F 4K Smart TV 2025 - UN55U7900FFXZA",,479.99,649.99,,,11/10/2025,
+"Samsung 85"" Class Crystal UHD U7900F 4K Smart TV 2025 - UN55U7900FFXZA",,699.99,999.99,,,11/10/2025,
+"Samsung 50"" Class QLED QEF1 4K Samsung Vision AI Smart TV (2025) Includes Student Savings",,323.99,499.99,,https://dealsmocktail.com/12441-samsung-75-inch-class-qled-qef1-4k-samsung-vision-ai-smart-tv-2025,,
+"Samsung 55"" Class QLED QEF1 4K Samsung Vision AI Smart TV (2025) Includes Student Savings",,341.99,599.99,,,,
+"Samsung 65"" Class QLED QEF1 4K Samsung Vision AI Smart TV (2025) Includes Student Savings",,431.99,849.99,,,,
+"Samsung  75"" Class QLED QEF1 4K Samsung Vision AI Smart TV (2025) Includes Student Savings",,611.99,1199.99,,,,
+"Samsung 65"" Class Neo QLED QN80F 4K Samsung Vision AI Smart TV (2025) Inclusive of Student Saving",,899.99,1799.99,,https://dealsmocktail.com/12564-samsung-85-inch-class-neo-qled-qn80f-4k-samsung-vision-ai-smart-tv-2025,,
+"Samsung 75"" Class Neo QLED QN80F 4K Samsung Vision AI Smart TV (2025) Inclusive of Student Savings",,1349.99,2399.99,,,,
+"Samsung 85"" Class Neo QLED QN80F 4K Samsung Vision AI Smart TV (2025) Inclusive of Student Saving",,1699.99,3499.99,,,,
+LG 70” 4K UHD webOS Smart TV,,368,429,,https://dealsmocktail.com/7391-lg-70-4k-uhd-webos-smart-tv,11/10/2025,
+"TCL 98"" Q Series (NEW 2025) 4K QLED, 144Hz, Dolby Vision HDR & Dolby Atmos Google TV",,998,1798.99,,https://dealsmocktail.com/12581-tcl-98-q-series-new-2025-4k-qled-144hz-dolby-vision-hdr-dolby-atmos-google-tv,11/14/2025,
+,,,,,,,
+Smart Phone Deals,,,,,,,
+"Samsung Galaxy S25 Edge Phone, 512 GB",,729,1220,,https://dealsmocktail.com/9547-samsung-galaxy-s25-edge-phone-512-gb-ai-smartphone,11/10/2025,
+Samsung  Galaxy S25 Ultra Unlocked | 256GB,,849,1300,,https://dealsmocktail.com/12486-samsung-galaxy-s25-ultra-256gb,11/10/2025,
+Samsung galaxy z fold 7 512gb,,1399,2120,, https://dealsmocktail.com/7499-samsung-galaxy-z-fold7-unlocked-512gb,11/10/2025,
+,,,,,,,
+Projector Deals,,,,,,,
+TMY 1080P Full HD Portable Mini Projector,,24.99,79.99,8G4R475T,https://dealsmocktail.com/12565-tmy-1080p-full-hd-portable-mini-projector,,
+Mini Projector 1080P Portable Projector ,,38.75,299.99,,,,
+,,,,,,,
+Car & Vehicle Electronics,,,,,,,
+"REDTIGER Dash Cam Front Rear, 4K/2.5K Full HD Dash Camera for Cars, Included 32GB Card",,85.48,149.98,,https://dealsmocktail.com/12573-redtiger-dash-cam-front-rear-4k25k-full-hd,,
+"3 Channel Dash Cam, 4K/2.5K+1440P Dash Cam Front and Rear Inside, Dash Camera for Cars",,38.99,88.99,,https://dealsmocktail.com/12598-3-channel-dash-cam-4k25k1440p-dash-cam-front-and-rear-inside,,
+,,,,,,,
+Electric Bike Deals,,,,,,,
+"Gocio 26"" Foldable Electric Mountain Bike – 500W",,369.99,599.99,,https://mavely.app.link/e/a4oX5ihVhYb,,
+"ZDZA Electric Bike 26”, 1000W Peak Motor E-Mountain Bike, 22MPH",,359.99,799.99,,https://mavely.app.link/e/SUCBXbRVhYb,,
+"Gocio 26"" 4.0 Fat Tire Electric Bike for Adults, 750W Motor",,499.99,1289.99,,https://mavely.app.link/e/wfRDclmWhYb,,
+"5TH WHEEL Electric Bike for Adult with 350W Motor, W18B 26""",,378.99,699.99,,https://mavely.app.link/e/Wbr36vMWhYb,,
+"AMYET EB26 Electric Bike for Adults, 26*4.0 Fat Tire E-Mountain Bicycle",,575.99,1099.99,,https://mavely.app.link/e/k4UBx15WhYb,,
+,,,,,,,
+Electric Scooter Deals,,,,,,,
+"GOTRAX G2Plus Foldable Electric Scooter for Adult Teens Age of 8+ with 6"" Tires, 200W 12mph",,148,248,,https://www.dealsmocktail.com/blog/h89zxillzwgo39j33c1kiq27/electric-scooter-deals,,
+"MIHOVER 550W Foldable Electric Scooter w/ Seat, 19 MPH, 12"" Tires, Front/Rear Baskets, 21-Mile Range",,349.99,1299.99,,,,
+"5TH WHEEL W09S 350W Electric Scooter, 18 MPH, 20-Mile Range, 8.5"" Tires, Turn Signals, Foldable w/ App Control",,169.99,369.99,,,,
+"EVERCROSS EV85F Electric Scooter for Adults, 350W",,199.99,269.99,,,,
+"Segway MAX G2 Electric Scooter, 22 mph Max Speed, 43 Miles Max Range, Teens and Adults, Black",,699.99,1399.99,,,,
+"Segway E2 Pro Electric Scooter, 18.6 mph Max Speed, 21.7 Miles Max Range, Teens and Adults",,379.99,599.99,,,,
+,,,,,,,
+Kids Bike & car Deals,,,,,,,
+Madd Gear Eclipse Commuter Scooter with 200mm Blue Wheels - Suitable for Kids and Adults,,39,69.99,,https://mavely.app.link/e/NVmHQlK0hYb,,
+Dynacraft Magna Sweetheart 12-Inch BMX Bike For Age 3-5 Years,,83.99,119.99,,https://mavely.app.link/e/swrdZ4O0hYb,,
+,,,,,,,
+,,,,,,,
+Furniture Deals,,,,,,,
+Office & Gaming Chair Deals,,,,,,,
+GTRACING Gaming Chair,,89.99,199.99,,https://dealsmocktail.com/5391-gtracing-gaming-chair,,
+EDX Ergonomic Gaming Chair High Back Office Chair,,76.97,137.99,,https://dealsmocktail.com/7097-edx-ergonomic-gaming-chair-high-back-office-chair-with-lumbar-support,,
+Bigzzia Gaming Chair Office Chair,,75.99,149.99,,https://mavely.app.link/e/L1fjQXUGhYb,,
+,,,,,,,
+Gaming/ Computer  Desks,,,,,,,
+48 inch Gaming Desk with Storage & LED Lights,,59.99,159.99,,https://mavely.app.link/e/FLhLqOaHhYb,,
+Bestier 51 inch Gaming/ Computer Desk with LED Lights,,79,139.99,,https://mavely.app.link/e/KWVBPWjHhYb,,
+47 inch Gaming/ Computer Desk with LED,,66.49,149.99,,https://mavely.app.link/e/Igp50DzHhYb,,
+,,,,,,,
+Recliner Chair Deals,,,,,,,
+Bonzy Home Overstuffed Massage Recliner Chair with Heat and Vibration,,219.99,359.99,,https://mavely.app.link/e/ASStCs9HhYb,,
+"JONPONY Power Lift Recliner Chair with Heat, Massage, Side Pocket and USB Charge Port",,259.99,499.99,,https://mavely.app.link/e/plW1r5gKhYb,,
+"Bonzy Home Leather Electric Recliner Chair with USB Ports and Cup Holders (Black, Brown)",,298.76,499.99,,https://mavely.app.link/e/9Ix6vEsIhYb,,
+"TEKAMON Large Power Lift Leather Recliner Chair with Heat, Massage, Cup Holders and Remote Control ",,485,779,,https://mavely.app.link/e/6SpXVvMIhYb,,
+Bonzy Home Electric Power Recliner Sofa Set Loveseat,,699.99,899.99,,https://mavely.app.link/e/gC4zT21IhYb,,
+,,,,,,,
+Sofa Deals,,,,,,,
+"87"" Couch Premium PU Leather 3 seater sofa with 2 pillows (Availble in Green, Black, Brown)",,365.99,559.99,,https://mavely.app.link/e/7CYiTovJhYb,,
+BedLuxury 47'' Wide 2-seat Chenille sofa with 2 Pillows,,134.99,234.99,,https://mavely.app.link/e/Gdg4jiPJhYb,,
+"LLappuil 71"" Corduroy Futon Convertible Sofa Bed ",,143.99,299.99,,https://mavely.app.link/e/QX33MtXKhYb,,
+"Sobaniilo 79.1"" Sectional Sofa with Movable Storage Ottoman, L-Shaped C",,255.99,499.99,,https://mavely.app.link/e/ARWlKAhLhYb,,
+"Furmax U-Shaped Sectional Sofa with Chaise, 4 Seats",,309.99,739.99,,https://mavely.app.link/e/YmO6qotLhYb,,
+"VANACC Sectional Sofa Bed with Storage and Soft Seat ,Reversible Pull Out Couch ",,389.99,599.99,,https://mavely.app.link/e/ooUKpG8KhYb,,
+"Linsy Home Plush Corduroy Sleeper Sofa Bed with Storage Seat, Pull Out Couch Bed with USB, Cup Holder, Side Pocket",,629.99,"2,999.99",,https://mavely.app.link/e/XIKLKP2JhYb,,
+,,,,,,,
+TV Stand Deals,,,,,,,
+"Mainstays Parsons TV Stand for TVs up to 50""",,48.44,69,,https://mavely.app.link/e/moXsXd0LhYb,,
+Mainstays Westley Sliding Door TV Stand for TVs up to 75”,,82.44,106,,https://mavely.app.link/e/qrzBm3yMhYb,,
+"MARNUR 55"" TV Stand for 60"" TV",,116.99,209.99,,https://mavely.app.link/e/EvCMeTXMhYb,,
+"Bestier LED TV Stand for TVs up to 85""",,145.9,269.99,,https://mavely.app.link/e/FwDzMaaNhYb,,
+"Bestier LED TV Stand for 75 inches TV Entertainment Center for TVs up to 85""",,151.99,299.99,,https://mavely.app.link/e/jnZBH8jNhYb,,
+"SinCiDo Farmhouse Fireplace TV Stand 75 Inch, Electric Fireplace TV Stand Up to 80 Inch TVs",,284.9,499.99,,https://mavely.app.link/e/HE68BbtNhYb,,
+,,,,,,,
+Bed Frame Deal,,,,,,,
+"QFTIME 14"" Queen Metal Bed Frame with Steel Slats, Heavy Duty Mattress Foundation",,53,110,,https://mavely.app.link/e/j5QFDbVQhYb,,
+Asofer Queen Size Bed Frame with Upholstered Headboard,,109.59,219.99,,https://mavely.app.link/e/0Y8xhIyRhYb,,
+Topeakmart Queen Size Platform Bed with Upholstered Headboard & Mattress Foundation,,109,229.99,,https://mavely.app.link/e/5bbiqhmddVb,,
+"Amolife Queen Size Bed Frame, Heavy Duty Metal Platform Bed ",,109.99,399.98,,https://mavely.app.link/e/77OafB8RhYb,,
+"Aiho Queen Lift Up Storage Bed, Queen Size Bed Frame",,161.49,359.99,,https://mavely.app.link/e/3zmb9rJQhYb,,
+Amolife Queen Faux Leather Upholstered Platform Bed Frame with Adjustable Headboard,,159.99,229.99,,https://mavely.app.link/e/1VMiuB8QhYb,,
+"Lifezone Queen Bed Frame with Bookcase Headboard, LED, Charging Ports & 4 Storage Drawers",,199.99,369.99,,https://mavely.app.link/e/DhaX96mRhYb,,
+EnHomee Queen Bed Frame with Headboard & Storage Upholistered Bed with 2 Large Drawers Noise Free,,227.98,,,https://mavely.app.link/e/CzAuWprShYb,,
+,,,,,,,
+Mattress Deals,,,,,,,
+"Babo Care TXO 12"" Cooling Queen Medium Euro Hybrid Mattress",,145.99,999,,https://mavely.app.link/e/DJnnayHShYb,,
+KOW Mattress Queen 12 inch Hybrid Mattress in a Box,,149.99,349.98,,https://mavely.app.link/e/XlypWWZl3Ub,,
+"GREOO 12"" Queen Hybrid Mattress – Gel Memory Foam & Pocket Coils, Medium Firm, Bed-in-a-Box",,195.99,269.99,,https://mavely.app.link/e/WVGX8B0ShYb,,
+"GUUKIN 12 inch Queen Mattress, Memory Foam & Spring Hybrid Medium Comfort Queen Size",,149.99,410.99,,https://mavely.app.link/e/0X3Tqo7ShYb,,
+"Nisien 12 Inch Hybrid Mattress in a Box, Gel Memory Foam Mattress, Queen Size",,155.99,323,,https://mavely.app.link/e/Yt5zCsrVzOb,,
+"Sleepy's Hybrid Clearance 11"" Firm Mattress, Queen",,337.49,1609,FLASH25,https://dealsmocktail.com/12625-sleepys-hybrid-clearance-11-firm-mattress-queen,,
+,,,,,,,
+Vanity Set Deals,,,,,,,
+"Furmax Makeup Vanity Desk with Lighted Mirror, Drawers & USB Outlet",,139.99,209.99,,https://mavely.app.link/e/oPCs8sBThYb,,
+Ktaxon Lighted Vanity Table Set with Sliding Mirror & USB Charging Station,,104,194.99,,https://mavely.app.link/e/BGUfyr5ThYb,,
+"Ktaxon Vanity Set with 3-Color Lighted Mirror, Charging Station & Storage – Retro Gray",,153.89,233.89,,https://mavely.app.link/e/nyrX8CeUhYb,,
+Ktaxon Large GRWM Makeup Vanity with Glass Top & Charging Station – White,,189.99,299.99,,https://mavely.app.link/e/smbLbkwUhYb,,
+,,,,,,,
+"Patio, Lawn & Garden",,,,,,,
+"WORX 40V 14"" Cordless Lawn Mower",,129,299.99,,https://dealsmocktail.com/12568-worx-40v-14-cordless-lawn-mower,,
+"Aoxun 10x12 Hardtop Gazebo with Curtains & Netting – Steel Roof, Aluminum Frame, Black",,579.99,1129.99,,https://mavely.app.link/e/17eV9HVNhYb,,
+Costway 3 Seats Patio Backyard Canopy Steel Frame Swing Glider Hammock Cushioned,,89.99,179.99,,https://mavely.app.link/e/3z0SsaaOhYb,,
+Walsunny 4-Piece Patio Rattan Furniture Set with Cushions & Tempered Glass Tabletop,,139.99,269.99,,https://mavely.app.link/e/t5mtQAnOhYb,,
+Brafab 2 Person Swing Egg Chair with Sturdy Stand and Fluffy Cushion,,215.9,599.99,,https://mavely.app.link/e/lpSAvayOhYb,,
+,,,,,,,
+"32"" Wood Burning Fire Pit Tables with Screen Lid, Poker, BBQ Net, Ice Tray, Food Clip and Cover",,65.99,169.99,,https://mavely.app.link/e/pvJhMIOOhYb,,
+"Greenworks 80V 21"" Cordless Mower + 500 CFM Blower Set with 2 Batteries & Rapid Charger",,364.99,599.99,,https://mavely.app.link/e/EbpJX80OhYb,,
+"Greenworks 40V 12"" String Trimmer with 2.0 Ah Battery & Charger 2101602",,79.99,139.99,,https://mavely.app.link/e/rYjkliaPhYb,,
+Litheli 20V Cordless Leaf Blower 350CFM ,,39.99,99.99,,https://mavely.app.link/e/l8h05VnPhYb,,
+,,,,,,,
+Fashion Deals,,,,,,,
+Michael Kors Black Friday Preview Sale! Upto 80% Off + Extra 20% Off (When you Buy2),,,,,https://dealsmocktail.com/saleDetail/237-michael-kors-black-friday-sale,,
+kate spade Holiday Sale! Upto 70% Off + Extra 20% Off Select styles + Take 15% Off On your $125 plus purchase,,,,,https://dealsmocktail.com/saleDetail/238-kate-spade-holiday-sale,,
+Columbia Members Exclusive Early Access Black Friday Sale! 50% Off Top Deals,,,,,https://dealsmocktail.com/saleDetail/239-columbia-early-access-black-friday-sale,,
+"Calvin Klein Early Access to  Black Friday Sale! 50% Off Site wide + Extra 30% Off On Sale Items
+",,,,,https://dealsmocktail.com/saleDetail/240-calvin-klein-black-friday-early-access,,
+Banana Republic Factory Holiday Preview Sale! Everything 50% Off + Extra 50% Off on Clearance,,,,,https://dealsmocktail.com/saleDetail/228-banana-republic-factory-holiday-preview-event,,
+Levis Strauss Signature Men's and Big Men’s Athletic Fit Jeans,,15,25,,https://dealsmocktail.com/12599-levi-strauss-signature-mens-and-big-mens-athletic-fit-jeans,,
+George Men's and Big Men's Quarter Zip Pullover with Long Sleeves,,10,17,,https://dealsmocktail.com/12600-george-mens-and-big-mens-quarter-zip-pullover-with-long-sleeves,,
+"Reebok Men's & Big Men's Dash Rice Hole Mesh Gym Shorts, 7"" Inseam",,9.99,,,https://dealsmocktail.com/12602-reebok-mens-big-mens-dash-rice-hole-mesh-gym-shorts-7-inseam,,
+IZOD Men's & Big Men's Puffer Jacket,,24,62,,https://dealsmocktail.com/12603-izod-mens-big-mens-puffer-jacket-up-to-size-2xl,,
+U.S. Polo Assn. Men's Cotton Crewneck Tee with Long Sleeves,,9,14,,https://dealsmocktail.com/12605-us-polo-assn-mens-cotton-crewneck-tee-with-long-sleeves-sizes-s-xl,,
+GENTS BLISS Henley Sweatshirts for Men,,16,69.99,,https://dealsmocktail.com/8844-gents-bliss-henley-sweatshirts-for-men,,
+Hanes Men's  EcoSmart Full Zip Fleece Hoodie Sweatshirt,,9.99,28,,https://dealsmocktail.com/12618-hanes-mens-big-mens-ecosmart-full-zip-fleece-hoodie-sweatshirt-sizes-s-3xl,,
+Hanes Men's EcoSmart Fleece Hoodie Sweatshirt,,8.74,27,,https://dealsmocktail.com/12619-hanes-mens-ecosmart-fleece-hoodie-sweatshirt-sizes-s-5xl,,
+"Reebok Men's & Big Men's Logo Graphic T-Shirt, Sizes XS-5XL",,10,12,,https://dealsmocktail.com/12620-reebok-mens-big-mens-logo-graphic-t-shirt,,
+Adidas Men’s Entrada 22 Shorts,,6.8,18,SD15,https://dealsmocktail.com/9172-adidas-mens-entrada-22-shorts,,
+Adidas Men’s Train Essentials Training Tee,,8,30,SD15, https://dealsmocktail.com/12487-adidas-train-essentials-training-tee,,
+Adidas Men's Kaptir 4.0 Shoes,,36,90,,https://dealsmocktail.com/12614-adidas-mens-kaptir-40-shoes,,
+Adidas Adissage 360rec Slides,,15,35,SD15,https://dealsmocktail.com/12615-adidas-adissage-360rec-slides,,
+Adidas Originals Adifom IIInfinity Mules,,25,50,,https://dealsmocktail.com/12241-adidas-adifom-iiinfinity-mules,,
+Adidas Men's Galaxy 7 Running Shoes,,25,60,SD15,https://dealsmocktail.com/12616-adidas-mens-galaxy-7-running-shoes,,
+Adidas Train Essentials Piqué 3-Stripes Training Shorts,,11.9,31,SD15,https://dealsmocktail.com/8746-adidas-mens-hiit-train-essentials-pique-3-stripes-training-shorts,,
+Adidas Legends 3-Stripes Basketball Shorts,,12.75,30,SD15,https://dealsmocktail.com/9535-adidas-mens-workout-legends-3-stripes-basketball-shorts,,
+Adidas Runfalcon 5 Running Shoes,,28,65,SD15,https://dealsmocktail.com/12628-adidas-mens-runfalcon-5-running-shoes,,
+,,,,,,,
+Big Chill Women's and Women's Plus Chevron Quilted Puffer Jacket with Hood,,22.99,85,,https://dealsmocktail.com/12621-big-chill-womens-and-womens-plus-chevron-quilted-puffer-jacket-with-hood,,
+Time and Tru Women’s and Women’s Plus Super Soft Longline Cardigan Sweater,,13.98,18.98,,https://dealsmocktail.com/12622-time-and-tru-womens-and-womens-plus-super-soft-longline-cardigan-sweater,,
+,,,,,,,
+Toy Deals,,,,,,,
+"Monster Jam, Official Monster Jam Collection 9-Pack Monster Trucks, 1:64 & 1:87 Scale (Walmart Exclusive)",,20,31.97,,https://mavely.app.link/e/ghi7UbOFhYb,,
+Hot Wheels Action 4-Loop Crash Out Track Set with Motorized Booster & 1:64 Scale Toy Car,,30,53.99,,https://mavely.app.link/e/Vdn9ex8yjYb,,
+HALO Rise Above Jr. 3-Piece Adjustable Inline Skates Combo Set - Red - Skates and Helmet- Junior Sizes 3-6,,29,50,,https://mavely.app.link/e/c521uehzjYb,,
+Squishmallows Original Sanrio 8 inch Hello Kitty with Pink Overalls - Child's Ultra Soft Plush,,5,12.97,,https://mavely.app.link/e/AxMytOlzjYb,,
+Carrera RC Mario Kart Pipe Kart RC Car - Mario,,37.49,56.99,,https://mavely.app.link/e/hus1TsyzjYb,,
+"Bounce Pro 10' Trampoline, Flash Light Zone, Classic Safety Enclosure",,99,207,,https://mavely.app.link/e/0oQtQTDzjYb,,
+"Fisher-Price Laugh & Learn Learn & Serve Coffee Café Toddler Electronic Toy, 10 Play Pieces",,17.49,32.39,,https://mavely.app.link/e/hnDIZIQzjYb,,
+"Razor A Kick Scooter for Kids - Clear, Lightweight, Foldable, Aluminum Frame, for Child Ages 5+.",,24.27,39.99,,https://mavely.app.link/e/xSyDv50zjYb,,
+"Play-Doh Stamp & Saw Tool Bench Playset, Construction Toys for Ages 3+",,11.99,25.99,,https://mavely.app.link/e/U4ElRXhAjYb,,
+"6V Huffy Disney Minnie Mouse Battery-Powered Ride-On Car, Kids Ages 3+",,118,174,,https://mavely.app.link/e/JUKH379zjYb,,
+"Barney Light up Wheels Tilt and Turn Toddler Scooter, 3 Wheel Kick Scooter for Kids Ages 3+",,18,34.99,,https://mavely.app.link/e/F9RmjxoAjYb,,
+"Bestway Xtreme Air 14' Outdoor Trampoline, No-Gap Enclosure, Anti-Rust Steel, Fast Setup",,159,229,,https://mavely.app.link/e/JE2HgEuAjYb,,
+Crtynell 100PCS Magnetic Blocks-Build Magnet World Set,,18.99,99,,https://dealsmocktail.com/12633-crtynell-100pcs-magnetic-blocks-build-magnet-world-set,,
+,,,,,,,
+LEGO Deals,,,,,,,
+,,,,,,,
+LEGO Star Wars Grogu with Hover Pram Building Toy Set,,49.99,99.99,,https://amzn.to/3JCc2zH,,
+LEGO Botanicals Mini Bonsai Trees Building Set,,49.99,69.99,,https://amzn.to/43xteNv,,
+LEGO Christmas Tree,,26.99,46.99,,https://amzn.to/3JQdw9u,,
+LEGO Speed Champions BMW M4 GT3 & BMW M Hybrid V8 Race Cars,,25,44.99,,https://amzn.to/44dUq3U,,
+"LEGO F1 Collectible Race Cars, 6 Pack - Building Set ",,17.79,22.94,,https://amzn.to/4i1ZZbz,,
+LEGO Classic Medium Creative Brick Box 10696 Building Toy Set,,17.99,34.99,,https://amzn.to/4r33iTN,,
+LEGO Speed Champions Ford Mustang Dark Horse Sports Car Toy,,17.59,26.99,,https://amzn.to/47Sh6cx,,
+"LEGO Harry Potter Flying Ford Anglia, Buildable Car Toy with 2 Minifigures",,9.59,14.99,,https://amzn.to/3M16oHQ,,
+LEGO Disney Princess Twirling Ariel Toy,,6.79,9.99,,https://amzn.to/4oIeROV,,
+LEGO Creator 3 in 1 Magical Unicorn Toy,,6.79,9.99,,https://amzn.to/4r0rxSJ,,
+,,,,,,,
+Beauty Deals,,,,,,,
+COSRX Snail Mucin 96% Power Repairing Essence 3.38 fl.oz 100ml,,16.45,25,,https://dealsmocktail.com/12567-cosrx-snail-mucin-repairing-serum-100ml-hydrating-serum-for-face,,
+"TruSkin Vitamin C Serum For Face – Anti Aging Face Serum, 1 Fl Oz",,12.09,21.99,,https://dealsmocktail.com/8818-truskin-vitamin-c-serum-for-face-anti-aging-face-serum,,
+Wavytalk Blow Dryer,,21.64,45,DQ7WQY7G,https://dealsmocktail.com/12604-wavytalk-hair-dryer-blown-away-ionic-hair-dryer-for-curly-hair-with-diffuser,,
+Shark FlexStyle® (Special Edition) | Air Styling & Drying System,,199,329,,https://www.dealsmocktail.com/blog/ieibw0rohh0c463m376aoje2/shark-hair-styling-deals,,
+Shark FlexFusion Hair Straightener & Powerful Hair Dryer with Fusion Hair Brush,,299.99,429.99,,,,
+Revlon 1875W Compact Hair Dryer,,10.97,28.28,,https://dealsmocktail.com/3933-revlon-1875w-compact-hair-dryer-black,,`;
+
+        function loadDeals() {
+            try {
+                const lines = csvData.split('\n');
+
+                // Skip first 2 lines (header info and column headers)
+                const deals = [];
+
+                for (let i = 2; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    // Parse CSV properly handling quotes
+                    const values = parseCSVLine(line);
+
+                    if (values.length >= 6 && values[0] && values[5]) {
+                        const productName = values[0].trim();
+                        const storeName = values[1]?.trim() || 'Various';
+                        const dealPrice = parseFloat(values[2]?.trim()) || null;
+                        const regularPrice = parseFloat(values[3]?.trim()) || null;
+                        const couponCode = values[4]?.trim() || '';
+                        const link = values[5]?.trim() || '';
+                        const startTime = values[6]?.trim() || '';
+                        const endTime = values[7]?.trim() || '';
+
+                        // Skip if it's not a valid deal
+                        if (productName.includes('Sheet will be updated') ||
+                            productName.includes('Amazon prime') ||
+                            productName.includes('Beats') ||
+                            productName.startsWith('Apple,') ||
+                            !link) continue;
+
+                        deals.push({
+                            productName,
+                            storeName,
+                            dealPrice,
+                            regularPrice,
+                            couponCode,
+                            link,
+                            startTime,
+                            endTime,
+                            discount: regularPrice && dealPrice ?
+                                Math.round(((regularPrice - dealPrice) / regularPrice) * 100) : 0
+                        });
+                    }
+                }
+
+                allDeals = deals;
+                populateStoreFilter();
+                updateStats();
+                displayDeals(allDeals);
+            } catch (error) {
+                console.error('Error loading deals:', error);
+                document.getElementById('dealsContainer').innerHTML =
+                    '<div class="no-results"><h2>Error loading deals</h2><p>Please try again later.</p></div>';
+            }
+        }
+
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            values.push(current);
+
+            return values;
+        }
+
+        function populateStoreFilter() {
+            const stores = [...new Set(allDeals.map(d => d.storeName))].sort();
+            const storeFilter = document.getElementById('storeFilter');
+            stores.forEach(store => {
+                const option = document.createElement('option');
+                option.value = store;
+                option.textContent = store;
+                storeFilter.appendChild(option);
+            });
+        }
+
+        function updateStats() {
+            const validDeals = allDeals.filter(d => d.discount > 0);
+            document.getElementById('totalDeals').textContent = allDeals.length;
+            
+            if (validDeals.length > 0) {
+                const avgSavings = Math.round(
+                    validDeals.reduce((sum, d) => sum + d.discount, 0) / validDeals.length
+                );
+                const maxDiscount = Math.max(...validDeals.map(d => d.discount));
+                
+                document.getElementById('avgSavings').textContent = avgSavings + '%';
+                document.getElementById('maxDiscount').textContent = maxDiscount + '%';
+            }
+        }
+
+        function displayDeals(deals) {
+            const container = document.getElementById('dealsContainer');
+            
+            if (deals.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <h2>No deals found</h2>
+                        <p>Try adjusting your filters or search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = deals.map((deal, index) => {
+                const isHighlight = deal.productName.toLowerCase().includes('membership') ||
+                                   deal.discount > 50;
+
+                return `
+                    <div class="deal-card ${isHighlight ? 'highlight-deal' : ''}" data-deal-index="${index}">
+                        <div class="image-placeholder" id="img-${index}">🛍️</div>
+                        <div class="deal-header">
+                            <h3 class="product-name">${deal.productName}</h3>
+                            <span class="store-badge">${deal.storeName}</span>
+                        </div>
+                        
+                        ${deal.dealPrice ? `
+                            <div class="price-section">
+                                <span class="deal-price">$${deal.dealPrice}</span>
+                                ${deal.regularPrice ? `
+                                    <span class="regular-price">$${deal.regularPrice}</span>
+                                    ${deal.discount > 0 ? `
+                                        <span class="discount-badge">${deal.discount}% OFF</span>
+                                    ` : ''}
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        ${deal.couponCode ? `
+                            <div class="coupon-code">
+                                <div class="coupon-label">Coupon Code:</div>
+                                <div class="code">${deal.couponCode}</div>
+                            </div>
+                        ` : ''}
+                        
+                        <a href="${deal.link}" target="_blank" class="deal-link">
+                            🛒 Get This Deal
+                        </a>
+                        
+                        ${deal.startTime || deal.endTime ? `
+                            <div class="deal-time">
+                                ${deal.startTime ? `Start: ${deal.startTime}` : ''}
+                                ${deal.startTime && deal.endTime ? ' | ' : ''}
+                                ${deal.endTime ? `End: ${deal.endTime}` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // Load images after rendering
+            loadProductImages(deals);
+        }
+
+        async function fetchOGImage(url) {
+            try {
+                // Try multiple CORS proxies for better reliability
+                const proxies = [
+                    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+                ];
+
+                for (const proxyUrl of proxies) {
+                    try {
+                        const response = await fetch(proxyUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'text/html'
+                            }
+                        });
+
+                        if (!response.ok) continue;
+
+                        const html = await response.text();
+
+                        // Parse the HTML to extract OG image
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        // Try multiple meta tag variations
+                        let imageUrl = doc.querySelector('meta[property="og:image"]')?.content ||
+                                      doc.querySelector('meta[name="og:image"]')?.content ||
+                                      doc.querySelector('meta[property="twitter:image"]')?.content ||
+                                      doc.querySelector('meta[name="twitter:image"]')?.content ||
+                                      doc.querySelector('meta[itemprop="image"]')?.content;
+
+                        if (imageUrl) {
+                            // Make sure the image URL is absolute
+                            if (imageUrl.startsWith('/')) {
+                                const urlObj = new URL(url);
+                                imageUrl = urlObj.origin + imageUrl;
+                            }
+                            return imageUrl;
+                        }
+                    } catch (proxyError) {
+                        console.log('Proxy failed, trying next...', proxyError);
+                        continue;
+                    }
+                }
+
+                return null;
+            } catch (error) {
+                console.error('Error fetching OG image:', error);
+                return null;
+            }
+        }
+
+        async function loadProductImages(deals) {
+            // Load images in batches to avoid overwhelming the browser
+            const batchSize = 3;
+            const timeout = 10000; // 10 second timeout per image
+
+            for (let i = 0; i < deals.length; i += batchSize) {
+                const batch = deals.slice(i, i + batchSize);
+
+                await Promise.all(batch.map(async (deal, batchIndex) => {
+                    const index = i + batchIndex;
+
+                    try {
+                        // Add timeout to image fetch
+                        const imageUrl = await Promise.race([
+                            fetchOGImage(deal.link),
+                            new Promise((_, reject) =>
+                                setTimeout(() => reject(new Error('Timeout')), timeout)
+                            )
+                        ]);
+
+                        if (imageUrl) {
+                            const placeholder = document.getElementById(`img-${index}`);
+                            if (placeholder) {
+                                // Create image element to test if it loads
+                                const img = new Image();
+                                img.onload = () => {
+                                    if (placeholder && placeholder.id === `img-${index}`) {
+                                        placeholder.outerHTML = `<img src="${imageUrl}" alt="${deal.productName}" class="product-image" loading="lazy" onerror="this.outerHTML='<div class=\\'image-placeholder\\''>🛍️</div>'">`;
+                                    }
+                                };
+                                img.onerror = () => {
+                                    console.log(`Failed to load image for: ${deal.productName}`);
+                                };
+                                img.src = imageUrl;
+                            }
+                        }
+                    } catch (error) {
+                        console.log(`Error loading image for ${deal.productName}:`, error.message);
+                    }
+                }));
+
+                // Small delay between batches
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+        }
+
+        function filterAndSortDeals() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const storeFilter = document.getElementById('storeFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            let filtered = allDeals.filter(deal => {
+                const matchesSearch = deal.productName.toLowerCase().includes(searchTerm) ||
+                                     deal.storeName.toLowerCase().includes(searchTerm);
+                const matchesStore = !storeFilter || deal.storeName === storeFilter;
+                
+                return matchesSearch && matchesStore;
+            });
+            
+            // Sort
+            filtered.sort((a, b) => {
+                switch(sortBy) {
+                    case 'discount':
+                        return b.discount - a.discount;
+                    case 'price-low':
+                        return (a.dealPrice || 999999) - (b.dealPrice || 999999);
+                    case 'price-high':
+                        return (b.dealPrice || 0) - (a.dealPrice || 0);
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayDeals(filtered);
+        }
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', filterAndSortDeals);
+        document.getElementById('storeFilter').addEventListener('change', filterAndSortDeals);
+        document.getElementById('sortBy').addEventListener('change', filterAndSortDeals);
+
+        // Load deals on page load
+        loadDeals();
+    </script>
+</body>
+</html>
