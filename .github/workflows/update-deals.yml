@@ -42,7 +42,9 @@ jobs:
       - name: Deploy to Amplify
         run: |
           # Prepare deployment
+          mkdir -p dist
           cp deals.csv dist/
+          cp index.html dist/
           cd dist && zip -r ../deploy.zip . && cd ..
 
           # Create and upload deployment
