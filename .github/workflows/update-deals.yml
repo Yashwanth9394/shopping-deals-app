@@ -9,20 +9,20 @@ on:
 jobs:
   update-deals:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Fetch latest deals from Google Sheets
         run: |
           curl -sL "https://docs.google.com/spreadsheets/d/1zt_OaS_HIAdhqsCs6ftK8dwTl8iVgxN5OyOcQhyMu1o/export?format=csv" > deals.csv
-          
+
       - name: Check if there are changes
         id: check_changes
         run: |
           git diff --exit-code deals.csv || echo "changed=true" >> $GITHUB_OUTPUT
-          
+
       - name: Commit and push if changed
         if: steps.check_changes.outputs.changed == 'true'
         run: |
@@ -32,9 +32,31 @@ jobs:
           git commit -m "🔄 Auto-update deals from Google Sheets [$(date +'%Y-%m-%d %H:%M:%S')]"
           git push origin master
           git push origin master:dev
-          
-      - name: Notify completion
-        if: steps.check_changes.outputs.changed == 'true'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to Amplify
         run: |
-          echo "✅ Deals updated successfully!"
-          echo "🚀 Amplify will auto-deploy shortly..."
+          # Copy latest deals to dist
+          cp deals.csv dist/
+
+          # Create deployment zip
+          cd dist && zip -r ../deploy.zip . && cd ..
+
+          # Create deployment and get upload URL
+          DEPLOYMENT=$(aws amplify create-deployment --app-id d4bc16wbw9avw --branch-name dev)
+          JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
+          UPLOAD_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
+
+          # Upload zip
+          curl -T deploy.zip "$UPLOAD_URL"
+
+          # Start deployment
+          aws amplify start-deployment --app-id d4bc16wbw9avw --branch-name dev --job-id $JOB_ID
+
+          echo "✅ Deployed to Amplify successfully!"
