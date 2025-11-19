@@ -140,7 +140,7 @@
         .image-placeholder {
             width: 100%;
             height: 250px;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -155,11 +155,13 @@
             font-size: 5rem;
             margin-bottom: 10px;
             animation: iconFloat 3s ease-in-out infinite;
+            filter: brightness(0) invert(1);
         }
 
         .store-icon-small {
             font-size: 2rem;
-            opacity: 0.6;
+            opacity: 0.4;
+            filter: brightness(0) invert(1);
         }
 
         @keyframes iconFloat {
@@ -366,13 +368,12 @@
         }
 
         .highlight-deal {
-            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
-            color: white;
+            border: 2px solid #ffc107;
         }
 
         .highlight-deal .product-name,
         .highlight-deal .deal-time {
-            color: white;
+            color: #333;
         }
 
         .highlight-deal::before {
