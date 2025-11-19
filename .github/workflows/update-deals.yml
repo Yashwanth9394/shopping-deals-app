@@ -2,9 +2,9 @@ name: Update Deals Daily
 
 on:
   schedule:
-    # Runs every day at 8 AM UTC (3 AM EST, 1:30 PM IST)
+    # Runs every day at 8 AM UTC (1:30 PM IST)
     - cron: '0 8 * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
   update-deals:
@@ -29,9 +29,8 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add deals.csv
-          git commit -m "🔄 Auto-update deals from Google Sheets [$(date +'%Y-%m-%d %H:%M:%S')]"
-          git push origin master
-          git push origin master:dev
+          git commit -m "🔄 Update deals from Google Sheets - $(date +'%Y-%m-%d')"
+          git push
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -42,21 +41,16 @@ jobs:
 
       - name: Deploy to Amplify
         run: |
-          # Copy latest deals to dist
+          # Prepare deployment
           cp deals.csv dist/
-
-          # Create deployment zip
           cd dist && zip -r ../deploy.zip . && cd ..
 
-          # Create deployment and get upload URL
-          DEPLOYMENT=$(aws amplify create-deployment --app-id d4bc16wbw9avw --branch-name dev)
+          # Create and upload deployment
+          DEPLOYMENT=$(aws amplify create-deployment --app-id d2ib3gtf6dshd8 --branch-name master)
           JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
           UPLOAD_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
 
-          # Upload zip
           curl -T deploy.zip "$UPLOAD_URL"
+          aws amplify start-deployment --app-id d2ib3gtf6dshd8 --branch-name master --job-id $JOB_ID
 
-          # Start deployment
-          aws amplify start-deployment --app-id d4bc16wbw9avw --branch-name dev --job-id $JOB_ID
-
-          echo "✅ Deployed to Amplify successfully!"
+          echo "✅ Deployed successfully!"
