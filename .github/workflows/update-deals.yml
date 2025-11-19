@@ -30,7 +30,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add deals.csv
           git commit -m "🔄 Auto-update deals from Google Sheets [$(date +'%Y-%m-%d %H:%M:%S')]"
-          git push
+          git push origin master
+          git push origin master:dev
           
       - name: Notify completion
         if: steps.check_changes.outputs.changed == 'true'
